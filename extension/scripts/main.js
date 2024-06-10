@@ -1,22 +1,27 @@
+/*global chrome*/
 let url = window.location.href;
 
-if (shouldBlock(url)) {
-    let root = document.querySelector("html");
-    if (root) {
-        root.innerHTML = getReplacementPage();
-    }
-}
-
-function shouldBlock(url) {
-    let rules = localStorage.getItem("rules");
-    alert(`rules are ${rules}`);
-    let matchedWebsite = null;
-    for (let rule in rules) {
-        if (url.includes(rule.site)) {
-            matchedWebsite = rule.site;
+(async function main() {
+    if (await shouldBlock(url)) {
+        let root = document.querySelector("html");
+        if (root) {
+            root.innerHTML = getReplacementPage();
         }
     }
-    if (!matchedWebsite) {
+})();
+
+
+async function shouldBlock(url) {
+    let rules = (await chrome.storage.local.get("rules")).rules ?? [];
+    alert(`rules are ${JSON.stringify(rules)}`);
+    let matchedWebsite = null;
+    for (let rule in rules) {
+        let site = rule.site;
+        if (site && site.length && url.includes(site)) {
+            matchedWebsite = site;
+        }
+    }
+    if (matchedWebsite == null) {
         return false;
     }
     return isOnCooldown(matchedWebsite);

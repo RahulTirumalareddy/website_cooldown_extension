@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && mkdir -p extension/static cp build/static extension/static && cp build/index.html extension/index.html",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

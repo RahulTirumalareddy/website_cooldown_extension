@@ -1,7 +1,9 @@
+/*global chrome*/
 import { useState } from 'react';
 
-function App() {
-    const [rules, setRules] = useState(JSON.parse(localStorage.getItem("rules")) ?? []);
+async function App() {
+    let loadedRules = (await chrome.storage.local.get("rules")).get("rules");
+    const [rules, setRules] = useState(loadedRules ?? []);
     
     function addRule(event) {
         event.preventDefault();
@@ -10,11 +12,10 @@ function App() {
         let cooldown = parseInt(form.new_rule_cooldown.value);
         let newRules = [...rules, new Rule(domain, cooldown)];
         setRules(newRules);
-        localStorage.setItem("rules", JSON.stringify(newRules));
+        // Does this have to stringify
+        chrome.storage.local.set({"rules": newRules});
+        // localStorage.setItem("rules", JSON.stringify(newRules));
         form.reset();
-    }
-    for (let rule in localStorage.getItem("rules")) {
-        console.log(`rule domain ${rule.site}, cooldown ${rule.cooldownPeriod}`);
     }
     return (
         <div>
