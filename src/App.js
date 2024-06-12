@@ -1,29 +1,43 @@
 /*global chrome*/
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-async function App() {
-    let loadedRules = (await chrome.storage.local.get("rules")).get("rules");
-    const [rules, setRules] = useState(loadedRules ?? []);
-    
-    function addRule(event) {
+function App() {
+    const [rules, setRules] = useState({});
+
+    useEffect(() => {
+        (async () => {
+            let loadedRules = (await chrome.storage.local.get("rules")).rules ?? {};
+            setRules(loadedRules);
+        })();
+    }, []);
+
+    async function addRule(event) {
         event.preventDefault();
         let form = document.getElementById("new_rule_form");
         let domain = form.new_rule_domain.value;
         let cooldown = parseInt(form.new_rule_cooldown.value);
-        let newRules = [...rules, new Rule(domain, cooldown)];
+        let newRules = {...rules}
+        newRules[domain] = cooldown;
         setRules(newRules);
-        // Does this have to stringify
-        chrome.storage.local.set({"rules": newRules});
-        // localStorage.setItem("rules", JSON.stringify(newRules));
+        await chrome.storage.local.set({"rules": newRules});
         form.reset();
     }
+
+    async function deleteRule(site) {
+        let newRules = {...rules};
+        delete newRules[site];
+        setRules(newRules);
+        await chrome.storage.local.set({"rules": newRules});
+    }
+
     return (
         <div>
             <h1>Website Cooldown Settings</h1>
             <h2>Current rules</h2>
             <ul>
                 {
-                    rules.map(rule => <li key={rule.site}> {rule.site}: {rule.cooldownPeriod} minute(s) </li>)
+                    Object.entries(rules).map(([site, cd]) => <li key={site}> {site}: {cd} minute(s)
+                        <button onClick={() => deleteRule(site)}>Delete?</button> </li>)
                 }
             </ul>
             <h2>Create new rule</h2>
@@ -36,15 +50,6 @@ async function App() {
             </span>
         </div>
     );
-}
-
-class Rule {
-    constructor(site, cooldownPeriod) {
-        // domain (ex: "youtube")
-        this.site = site;
-        // minutes (ex: 10)
-        this.cooldownPeriod = cooldownPeriod;
-      }
 }
 
 export default App;

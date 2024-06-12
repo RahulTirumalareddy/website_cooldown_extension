@@ -1,3 +1,4 @@
+/*global chrome*/
 chrome.runtime.onInstalled.addListener(({reason}) => {
     if (reason === 'install') {
         chrome.tabs.create({
@@ -5,4 +6,3 @@ chrome.runtime.onInstalled.addListener(({reason}) => {
         });
     }
 });
-

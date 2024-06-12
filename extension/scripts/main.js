@@ -10,13 +10,10 @@ let url = window.location.href;
     }
 })();
 
-
 async function shouldBlock(url) {
-    let rules = (await chrome.storage.local.get("rules")).rules ?? [];
-    alert(`rules are ${JSON.stringify(rules)}`);
+    let rules = (await chrome.storage.local.get("rules")).rules ?? {};
     let matchedWebsite = null;
-    for (let rule in rules) {
-        let site = rule.site;
+    for (let site in rules) {
         if (site && site.length && url.includes(site)) {
             matchedWebsite = site;
         }

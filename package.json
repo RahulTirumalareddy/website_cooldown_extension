@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && mkdir -p extension/static cp build/static extension/static && cp build/index.html extension/index.html",
+    "build": "GENERATE_SOURCEMAP=false NODE_ENV=development react-scripts build && rm -R extension/static && mkdir extension/static && cp -r build/static extension/ && cp -r build/index.html extension/index.html",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
