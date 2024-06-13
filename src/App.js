@@ -56,7 +56,7 @@ function App() {
 class Rule {
     constructor(site, cooldownPeriod) {
         // Ex: "youtube"
-        this.site = site;
+        this.site = site.toLowerCase();
         // Ex: 60 (minutes)
         this.cooldownPeriod = cooldownPeriod;
         // Ex: 1718250562434 (Epoch millis)

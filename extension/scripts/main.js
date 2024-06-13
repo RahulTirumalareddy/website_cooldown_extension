@@ -37,6 +37,7 @@ function getReplacementPage() {
 }
 
 function getMatchingRuleOrNull(rules, url) {
+    url = url.toLowerCase();
     for (let site in rules) {
         if (url.includes(site)) {
             return rules[site];
