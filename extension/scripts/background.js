@@ -28,7 +28,7 @@ chrome.tabs.onRemoved.addListener(async function(tabid, removedInfo) {
     }
     tabIdToUrl.delete(tabid);
     let rules = (await chrome.storage.local.get("rules")).rules ?? {};
-    let maybeMatchingRule = getMatchingRuleOrNull(rules, closedTabUrl);
+    let maybeMatchingRule = getMatchingRuleOrNull(rules, closedTabUrl.toLowerCase());
     if (!maybeMatchingRule) {
         return;
     }

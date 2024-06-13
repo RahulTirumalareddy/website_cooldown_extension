@@ -15,7 +15,7 @@ function App() {
     async function addRule(event) {
         event.preventDefault();
         let form = document.getElementById("new_rule_form");
-        let domain = form.new_rule_domain.value;
+        let domain = form.new_rule_domain.value.toLowerCase();
         let cooldown = parseInt(form.new_rule_cooldown.value);
         let newRules = {...rules}
         newRules[domain] = new Rule(domain, cooldown);
