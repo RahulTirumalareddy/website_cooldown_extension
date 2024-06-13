@@ -1,4 +1,5 @@
 /*global chrome*/
+
 let url = window.location.href;
 
 (async function main() {
@@ -12,23 +13,34 @@ let url = window.location.href;
 
 async function shouldBlock(url) {
     let rules = (await chrome.storage.local.get("rules")).rules ?? {};
-    let matchedWebsite = null;
-    for (let site in rules) {
-        if (site && site.length && url.includes(site)) {
-            matchedWebsite = site;
-        }
-    }
-    if (matchedWebsite == null) {
+    let matchingRule = getMatchingRuleOrNull(rules, url);
+    if (!matchingRule) {
         return false;
     }
-    return isOnCooldown(matchedWebsite);
+    return isOnCooldown(matchingRule);
 }
 
-function isOnCooldown(site) {
-    return true;
+function isOnCooldown(rule) {
+    let currentTime = Date.now();
+    if (!rule.lastClosed) {
+        return false;
+    }
+    let siteLastClosedEpochMillis = rule.lastClosed;
+    let cooldownInMillis = parseInt(rule.cooldownPeriod) * 60 * 1000;
+    let minValidOpenTime = siteLastClosedEpochMillis + cooldownInMillis;
+    return currentTime < minValidOpenTime;
 }
 
 function getReplacementPage() {
     return `<h2>This website is currently on cooldown.</h2>
     `
+}
+
+function getMatchingRuleOrNull(rules, url) {
+    for (let site in rules) {
+        if (url.includes(site)) {
+            return rules[site];
+        }
+    }
+    return null;
 }

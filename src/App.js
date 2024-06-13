@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 
 function App() {
+    // Object where key is site, value is Rule
     const [rules, setRules] = useState({});
 
     useEffect(() => {
@@ -17,7 +18,7 @@ function App() {
         let domain = form.new_rule_domain.value;
         let cooldown = parseInt(form.new_rule_cooldown.value);
         let newRules = {...rules}
-        newRules[domain] = cooldown;
+        newRules[domain] = new Rule(domain, cooldown);
         setRules(newRules);
         await chrome.storage.local.set({"rules": newRules});
         form.reset();
@@ -36,7 +37,7 @@ function App() {
             <h2>Current rules</h2>
             <ul>
                 {
-                    Object.entries(rules).map(([site, cd]) => <li key={site}> {site}: {cd} minute(s)
+                    Object.entries(rules).map(([site, v]) => <li key={site}> {site}: {v.cooldownPeriod} minute(s)
                         <button onClick={() => deleteRule(site)}>Delete?</button> </li>)
                 }
             </ul>
@@ -50,6 +51,17 @@ function App() {
             </span>
         </div>
     );
+}
+
+class Rule {
+    constructor(site, cooldownPeriod) {
+        // Ex: "youtube"
+        this.site = site;
+        // Ex: 60 (minutes)
+        this.cooldownPeriod = cooldownPeriod;
+        // Ex: 1718250562434 (Epoch millis)
+        this.lastClosed = null;
+    }
 }
 
 export default App;

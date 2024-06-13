@@ -12,7 +12,9 @@
     },
     "content_scripts": [
         {
-            "js": ["scripts/main.js"],
+            "js": [
+                "scripts/main.js"
+            ],
             "run_at": "document_end",
             "matches": [
                 "http://*/*",
@@ -22,6 +24,7 @@
     ],
     "permissions": [
         "activeTab",
-        "storage"
+        "storage",
+        "tabs"
     ]
 }
